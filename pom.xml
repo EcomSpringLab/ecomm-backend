@@ -9,10 +9,15 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.shubham.labs</groupId>
-	<artifactId>ecomm</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>ecomm</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>ecomm-parent</artifactId>
+	<version>0.0.1</version>
+	<name>ecomm-parent</name>
+	<description>Parent POM for ECOMM</description>
+	<packaging>pom</packaging>
+	<modules>
+		<module>core</module>
+		<module>product</module>
+	</modules>
 	<url/>
 	<licenses>
 		<license/>
@@ -224,48 +229,6 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.hibernate.orm.tooling</groupId>
-				<artifactId>hibernate-enhance-maven-plugin</artifactId>
-				<version>${hibernate.version}</version>
-				<executions>
-					<execution>
-						<id>enhance</id>
-						<goals>
-							<goal>enhance</goal>
-						</goals>
-						<configuration>
-							<enableLazyInitialization>true</enableLazyInitialization>
-							<enableDirtyTracking>true</enableDirtyTracking>
-							<enableAssociationManagement>true</enableAssociationManagement>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.graalvm.buildtools</groupId>
-				<artifactId>native-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.cyclonedx</groupId>
-				<artifactId>cyclonedx-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>
