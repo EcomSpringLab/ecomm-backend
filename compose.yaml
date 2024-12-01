@@ -15,3 +15,7 @@ services:
     image: 'openzipkin/zipkin:latest'
     ports:
       - '9411'
+  kafka:
+    image: 'apache/kafka:latest'
+    ports:
+      - '9092'

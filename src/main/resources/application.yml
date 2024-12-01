@@ -1,0 +1,36 @@
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  tracing.sampling.probability: 1.0
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 1ms,5ms
+  endpoint:
+    env:
+      show-values: ALWAYS
+    configprops:
+      show-values: ALWAYS
+    health:
+      show-details: ALWAYS
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  info:
+    java:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+    os:
+      enabled: true
+    env:
+      enabled: true
