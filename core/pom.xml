@@ -8,9 +8,8 @@
         <version>0.0.1</version>
     </parent>
     <artifactId>ecomm-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>ecomm-core</name>
-    <description>Core project for Ecomm</description>
+    <description>Core module for Ecomm</description>
     <url/>
     <licenses>
         <license/>
