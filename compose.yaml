@@ -27,6 +27,10 @@ services:
       org.springframework.boot.readiness-check.tcp.disable: true
   collector:
     image: 'otel/opentelemetry-collector-contrib:latest'
+    command:
+      - --config=/etc/otel-collector.yml
+    volumes:
+      - ./otel-collector.yml:/etc/otel-collector.yml
     ports:
       - 1888:1888 # pprof extension
       - 8888:8888 # Prometheus metrics exposed by the Collector
@@ -35,6 +39,29 @@ services:
       - 4317:4317 # OTLP gRPC receiver
       - 4318:4318 # OTLP http receiver
       - 55679:55679 # zpages extension
+    depends_on:
+      - loki
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
     labels:
       org.springframework.boot.readiness-check.tcp.disable: true
 

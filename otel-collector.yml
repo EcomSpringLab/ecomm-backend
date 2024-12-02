@@ -1,18 +1,42 @@
 receivers:
   otlp:
     protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
+processors:
+  batch:
+    send_batch_max_size: 1000
+    send_batch_size: 100
+    timeout: 10s
+
 exporters:
   debug:
     verbosity: detailed
+  zipkin:
+    endpoint: http://zipkin:9411/api/v2/spans
+    format: proto
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
 service:
+  extensions: [ health_check, pprof, zpages ]
   pipelines:
-    metrics:
-      receivers: [ otlp ]
-      exporters: [ debug ]
     traces:
       receivers: [ otlp ]
+      #      processors: [batch]
+      exporters: [ zipkin ]
+    metrics:
+      receivers: [ otlp ]
+      #      processors: [batch]
       exporters: [ debug ]
     logs:
       receivers: [ otlp ]
-      exporters: [ debug ]
+      #      processors: [batch]
+      exporters: [ debug,loki ]

@@ -30,4 +30,5 @@ public class AppConfig {
                 .circuitBreaker(circuitBreakerRegistry.circuitBreaker("backendA"))
                 .build().getClient();
     }
+
 }
