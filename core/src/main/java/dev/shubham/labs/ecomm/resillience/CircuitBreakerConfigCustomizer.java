@@ -15,7 +15,7 @@ public class CircuitBreakerConfigCustomizer {
 
     @Bean
     public RegistryEventConsumer<CircuitBreaker> circuitBreakerEventConsumer() {
-        return new RegistryEventConsumer<CircuitBreaker>() {
+        return new RegistryEventConsumer<>() {
             @Override
             public void onEntryAddedEvent(EntryAddedEvent<CircuitBreaker> entryAddedEvent) {
                 var circuitBreaker = entryAddedEvent.getAddedEntry();

@@ -17,7 +17,7 @@ public class RetryConfigCustomizer {
 
     @Bean
     public RegistryEventConsumer<Retry> retryEventConsumer() {
-        return new RegistryEventConsumer<Retry>() {
+        return new RegistryEventConsumer<>() {
             @Override
             public void onEntryAddedEvent(EntryAddedEvent<Retry> entryAddedEvent) {
                 var retry = entryAddedEvent.getAddedEntry();
