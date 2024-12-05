@@ -14,11 +14,21 @@ processors:
 exporters:
   debug:
     verbosity: detailed
+  otlp:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlp/jaeger:
+    endpoint: "http://jaeger:4317"
+    tls:
+      insecure: true
   zipkin:
     endpoint: http://zipkin:9411/api/v2/spans
     format: proto
   loki:
     endpoint: "http://loki:3100/loki/api/v1/push"
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
 
 extensions:
   health_check:
@@ -30,13 +40,13 @@ service:
   pipelines:
     traces:
       receivers: [ otlp ]
-      #      processors: [batch]
-      exporters: [ zipkin ]
+      processors: [ batch ]
+      exporters: [ zipkin, otlp/jaeger, otlp ]
     metrics:
       receivers: [ otlp ]
-      #      processors: [batch]
-      exporters: [ debug ]
+      processors: [ batch ]
+      exporters: [ prometheusremotewrite ]
     logs:
       receivers: [ otlp ]
-      #      processors: [batch]
-      exporters: [ debug,loki ]
+      processors: [ batch ]
+      exporters: [ loki ]

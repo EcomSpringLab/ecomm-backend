@@ -41,6 +41,9 @@ services:
       - 55679:55679 # zpages extension
     depends_on:
       - loki
+      - tempo
+      - jaeger-all-in-one
+      - zipkin
     labels:
       org.springframework.boot.readiness-check.tcp.disable: true
 
@@ -62,6 +65,49 @@ services:
       - "3000:3000"
     depends_on:
       - loki
+      - tempo
+      - jaeger-all-in-one
+      - zipkin
+      - prometheus
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yml" ]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yml
+    restart: always
+    ports:
+      - "4317"  # otlp grpc
+      - "3200"
+
+  jaeger-all-in-one:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: always
+    ports:
+      - "16686:16686"
+      - "4317"
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --enable-feature=exemplar-storage
+      - --web.enable-remote-write-receiver
+    restart: always
+    ports:
+      - '9090:9090'
+    depends_on:
+      - collector
     labels:
       org.springframework.boot.readiness-check.tcp.disable: true
 
