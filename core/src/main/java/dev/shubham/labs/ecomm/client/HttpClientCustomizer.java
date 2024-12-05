@@ -31,7 +31,7 @@ public class HttpClientCustomizer<S> {
         Objects.requireNonNull(builder, "RestClient.Builder must not be null");
         Objects.requireNonNull(clientConfig, "ClientConfig must not be null");
         Objects.requireNonNull(serviceType, "Service type must not be null");
-        var restClient = builder
+        var restClient = builder.clone()
                 .baseUrl(clientConfig.getBaseUrl())
                 .requestInitializer(clientHttpRequestInitializer())
                 .requestInterceptor(new ClientHttpRequestInterceptorCustomizer(retry, circuitBreaker))
