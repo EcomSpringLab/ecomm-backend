@@ -34,3 +34,7 @@ management:
       enabled: true
     env:
       enabled: true
+otel:
+  resource.attributes:
+    deployment:
+      environment: local
