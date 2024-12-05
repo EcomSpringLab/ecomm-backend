@@ -27,3 +27,8 @@ application.client:
   inventory:
     baseUrl: "http://localhost:8081"
     connectTimeout: 1s
+
+spring:
+  profiles:
+    include:
+      - common
