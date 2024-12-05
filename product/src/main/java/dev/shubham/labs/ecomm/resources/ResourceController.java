@@ -18,8 +18,8 @@ public class ResourceController {
 
     @GetMapping(path = "/test")
     ResponseEntity<String> status() {
-        inventoryRestClient.findInventory(Collections.singleton("test"));
-        return ResponseEntity.status(200).body("Success");
+        log.info("status request received");
+        return inventoryRestClient.findInventory(Collections.singleton("test"));
 
     }
 }
