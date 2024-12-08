@@ -6,25 +6,25 @@ services:
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5432'
+      - '5432:5432'
   redis:
     image: 'redis:latest'
     ports:
-      - '6379'
+      - '6379:6379'
     labels:
       org.springframework.boot.readiness-check.tcp.disable: true
   zipkin:
     image: 'openzipkin/zipkin:latest'
     ports:
-      - '9411'
+      - '9411:9411'
     labels:
       org.springframework.boot.readiness-check.tcp.disable: true
   kafka:
     image: 'apache/kafka:latest'
     ports:
-      - '9092'
-    labels:
-      org.springframework.boot.readiness-check.tcp.disable: true
+      - '9092:9092'
+  #    labels:
+  #      org.springframework.boot.readiness-check.tcp.disable: true
   collector:
     image: 'otel/opentelemetry-collector-contrib:latest'
     command:
