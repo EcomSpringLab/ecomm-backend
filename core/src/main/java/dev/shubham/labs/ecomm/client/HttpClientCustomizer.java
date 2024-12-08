@@ -27,15 +27,15 @@ public class HttpClientCustomizer<S> {
     protected final S client;
 
     @Builder
-    protected HttpClientCustomizer(RestClient.Builder builder, ClientConfig clientConfig, Class<S> serviceType, Retry retry, CircuitBreaker circuitBreaker) {
+    protected HttpClientCustomizer(RestClient.Builder builder, ClientProps clientProps, Class<S> serviceType, Retry retry, CircuitBreaker circuitBreaker) {
         Objects.requireNonNull(builder, "RestClient.Builder must not be null");
-        Objects.requireNonNull(clientConfig, "ClientConfig must not be null");
+        Objects.requireNonNull(clientProps, "ClientConfig must not be null");
         Objects.requireNonNull(serviceType, "Service type must not be null");
         var restClient = builder.clone()
-                .baseUrl(clientConfig.getBaseUrl())
+                .baseUrl(clientProps.getBaseUrl())
                 .requestInitializer(clientHttpRequestInitializer())
                 .requestInterceptor(new ClientHttpRequestInterceptorCustomizer(retry, circuitBreaker))
-                .requestFactory(clientHttpRequestFactory(clientConfig.getConnectTimeout()))
+                .requestFactory(clientHttpRequestFactory(clientProps.getConnectTimeout()))
                 .build();
         var adapter = RestClientAdapter.create(restClient);
         var factory = HttpServiceProxyFactory.builderFor(adapter).build();

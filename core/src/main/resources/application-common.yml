@@ -38,3 +38,9 @@ otel:
   resource.attributes:
     deployment:
       environment: local
+
+  experimental:
+    resource:
+      disabled:
+        keys:
+          - process.command_args

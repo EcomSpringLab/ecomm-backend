@@ -10,7 +10,7 @@ import java.time.Duration;
 @Getter
 @Setter
 @Validated
-public class ClientConfig {
+public class ClientProps {
 
     @NotBlank(message = "Base URL field cannot be Blank for ClientConfig")
     private String baseUrl;
