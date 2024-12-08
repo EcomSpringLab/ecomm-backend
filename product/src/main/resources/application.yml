@@ -23,12 +23,24 @@ resilience4j.circuitbreaker:
     backendA:
       baseConfig: default
       waitDurationInOpenState: 5000
-application.client:
-  inventory:
-    baseUrl: "http://localhost:8081"
-    connectTimeout: 1s
-
+application:
+  client:
+    inventory:
+      baseUrl: "http://localhost:8081"
+      connectTimeout: 1s
+  producer.instances:
+    inventory:
+      bootstrapServers: "http://localhost:9092"
+      topic: ${KAFKA_INVENTORY_CONSUMER_TOPIC:allocate-inventory-event}
+      idempotence: ${KAFKA_INVENTORY_CONSUMER_GROUP:true}
 spring:
   profiles:
     include:
       - common
+  kafka:
+    bootstrap-servers: "http://localhost:9092"
+  datasource:
+    #    driverClassName: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/mydatabase"
+    username: ${DB_USERNAME:myuser}
+    password: ${DB_PASSWORD:secret}
