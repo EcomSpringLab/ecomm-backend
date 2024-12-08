@@ -2,3 +2,15 @@ spring:
   profiles:
     include:
       - common
+  datasource:
+    #    driverClassName: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/mydatabase"
+    username: ${DB_USERNAME:myuser}
+    password: ${DB_PASSWORD:secret}
+
+application:
+  consumer:
+    inventory:
+      bootstrapServers: "http://localhost:9092"
+      topic: ${KAFKA_INVENTORY_CONSUMER_TOPIC:allocate-inventory-event}
+      consumerGroup: ${KAFKA_INVENTORY_CONSUMER_GROUP:inventory-consumer}
