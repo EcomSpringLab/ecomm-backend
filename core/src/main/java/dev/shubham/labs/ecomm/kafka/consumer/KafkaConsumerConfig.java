@@ -34,6 +34,7 @@ public abstract class KafkaConsumerConfig<K, V extends Record<K>> {
         var cf = consumerFactory(kafkaProperties, key, value);
         cf.addListener(new MicrometerConsumerListener<>(meterRegistry));
         factory.setConsumerFactory(cf);
+        factory.setRecordInterceptor(new KafkaConsumerInterceptor<>());
         factory.setConcurrency(kafkaProperties.getConcurrency());
         factory.getContainerProperties().setMicrometerEnabled(true);
         factory.getContainerProperties().setObservationEnabled(true);

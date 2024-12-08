@@ -4,6 +4,7 @@ import dev.shubham.labs.ecomm.kafka.KafkaProducerProps;
 import dev.shubham.labs.ecomm.kafka.Record;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
+import io.opentelemetry.api.trace.Tracer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -25,10 +26,13 @@ public abstract class KafkaProducerConfig<K, V extends Record<K>> {
 
     protected final ExecutorService kafkaProducerExecutor;
 
+    protected final Tracer tracer;
+
     KafkaProducerConfig(KafkaProducerProps kafkaProperties, Class<?> keySerializer, Class<?> valueSerializer,
-                        MeterRegistry meterRegistry, ObservationRegistry registry, ExecutorService kafkaProducerExecutor) {
+                        MeterRegistry meterRegistry, ObservationRegistry registry, ExecutorService kafkaProducerExecutor, Tracer tracer) {
         this.kafkaProducerExecutor = kafkaProducerExecutor;
         this.registry = registry;
+        this.tracer = tracer;
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);

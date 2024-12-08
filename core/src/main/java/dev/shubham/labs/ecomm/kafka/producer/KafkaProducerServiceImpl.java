@@ -5,6 +5,15 @@ import dev.shubham.labs.ecomm.kafka.Record;
 import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
+import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.context.propagation.TextMapSetter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
@@ -30,8 +39,8 @@ public abstract class KafkaProducerServiceImpl<K, V extends Record<K>> extends K
     };
 
     protected KafkaProducerServiceImpl(KafkaProducerProps kafkaProperties, Class<?> serializer, Class<?> deSerializer,
-                                       MeterRegistry meterRegistry, ObservationRegistry registry, ExecutorService kafkaProducerExecutor) {
-        super(kafkaProperties, serializer, deSerializer, meterRegistry, registry, kafkaProducerExecutor);
+                                       MeterRegistry meterRegistry, ObservationRegistry registry, ExecutorService kafkaProducerExecutor, Tracer tracer) {
+        super(kafkaProperties, serializer, deSerializer, meterRegistry, registry, kafkaProducerExecutor, tracer);
     }
 
     @Override
@@ -52,11 +61,44 @@ public abstract class KafkaProducerServiceImpl<K, V extends Record<K>> extends K
     @Override
     public void send(V value, Map<String, Object> header, BiConsumer<SendResult<K, V>, ? super Throwable> action) {
 
-        // var observation = registry.getCurrentObservation();
-        var future = getKafkaTemplate()
-                .send(MessageBuilder.withPayload(value).copyHeaders(generateHeaders(value, header)).build());
-        future.whenCompleteAsync(action,
-                ContextSnapshotFactory.builder().build().captureAll().wrapExecutor(kafkaProducerExecutor));
+        // Create a span with more detailed configuration
+        Span span = tracer.spanBuilder("kafka-produce")
+                .setSpanKind(SpanKind.PRODUCER)
+                .startSpan();
+        try {
+            // Add span attributes
+            span.setAttribute("messaging.system", "kafka");
+            span.setAttribute("messaging.destination", kafkaTemplate.getDefaultTopic());
+            span.setAttribute("messaging.destination_kind", "topic");
+            // Inject trace context into Kafka headers
+            Context currentContext = Context.current().with(span);
+
+            var mutableHeaders = generateHeaders(value, header);
+
+            ContextPropagators propagators =
+                    ContextPropagators.create(
+                            TextMapPropagator.composite(
+                                    W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance()));
+
+            propagators.getTextMapPropagator().inject(currentContext, mutableHeaders, new KafkaHeaderSetter());
+
+            // var observation = registry.getCurrentObservation();
+            var message = MessageBuilder.withPayload(value).copyHeaders(mutableHeaders)
+                    .build();
+
+            var future = getKafkaTemplate()
+                    .send(message);
+            future.whenCompleteAsync(action,
+                    ContextSnapshotFactory.builder().build().captureAll().wrapExecutor(kafkaProducerExecutor));
+
+        } catch (Exception e) {
+            span.recordException(e);
+            throw e;
+        } finally {
+            // End the span
+            span.end();
+        }
+
 
     }
 
@@ -67,6 +109,15 @@ public abstract class KafkaProducerServiceImpl<K, V extends Record<K>> extends K
 //        header.put("X-B3-SpanId", Span.current().getSpanContext().getSpanId());
         header.putAll(customHeaders);
         return header;
+    }
+
+    private static class KafkaHeaderSetter implements TextMapSetter<Map<String, Object>> {
+        @Override
+        public void set(Map<String, Object> headers, String key, String value) {
+            if (key != null && value != null) {
+                headers.put(key, value.getBytes());
+            }
+        }
     }
 
 }
