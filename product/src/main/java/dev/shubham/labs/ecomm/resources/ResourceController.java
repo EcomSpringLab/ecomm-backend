@@ -23,7 +23,6 @@ public class ResourceController {
     ResponseEntity<String> status() {
         log.info("status request received");
         allocateInventoryProducerService.send(new AllocateInventoryEvent("testidbeer"));
-//        return ResponseEntity.ok("success");
         return inventoryRestClient.findInventory(Collections.singleton("test"));
 
     }
