@@ -14,7 +14,9 @@ class TestcontainersConfiguration {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native:latest"));
+        return new KafkaContainer(DockerImageName
+                .parse("apache/kafka-native:latest"))
+                .withEnv("KAFKA_LISTENERS", "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094");
     }
 
     @Bean
