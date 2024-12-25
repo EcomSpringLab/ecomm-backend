@@ -19,7 +19,7 @@ public class EventPersistenceAutoConfiguration {
         return new NoOpEventService<>();
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({EventEntity.class, EventRepository.class})
     @EnableJpaRepositories(basePackageClasses = EventRepository.class)
     @EntityScan(basePackageClasses = {EventEntity.class})

@@ -50,7 +50,7 @@ public abstract class KafkaConsumerConfig<K, V extends Record<K>> {
     private final ConcurrentMessageListenerContainer<K, V> container;
     private final CircuitBreaker circuitBreaker;
     private final BiConsumer<K, V> messageProcessor;
-//    private final Propagator propagator;
+    //    private final Propagator propagator;
     //    private final OpenTelemetry openTelemetry;
 //    private final Tracer tracer;
     private final ObservationRegistry observationRegistry;

@@ -33,7 +33,7 @@ public class KafkaConsumerBuilder<K, V> {
     private ResilienceStrategy resilienceStrategy = new NoOpResilienceStrategy();
     private ContainerLifecycleStrategy containerStrategy = new NoOpContainerStrategy();
     private Consumer<ConsumerRecord<K, V>> messageProcessor;
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public KafkaConsumerBuilder<K, V> withConfig(KafkaConsumerProps config) {
         this.config = config;

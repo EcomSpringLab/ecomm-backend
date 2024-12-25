@@ -1,1 +1,2 @@
 dev.shubham.labs.kafka.xconsumer.event.EventPersistenceAutoConfiguration
+dev.shubham.labs.resilience.ResilienceAutoConfiguration
