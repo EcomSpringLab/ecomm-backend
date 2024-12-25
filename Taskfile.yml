@@ -1,6 +1,14 @@
 version: '3.40.0'
 
 tasks:
+  infra-up:
+    desc: Setup infrastructure
+    cmds:
+      - docker-compose -f infra/docker/compose.yaml up -d
+  infra-down:
+    desc: Tear down infrastructure
+    cmds:
+      - docker-compose -f infra/docker/compose.yaml down
   build:
     desc: Build the project
     cmds:
