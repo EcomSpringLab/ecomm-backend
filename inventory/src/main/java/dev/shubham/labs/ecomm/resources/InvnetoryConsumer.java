@@ -3,10 +3,11 @@ package dev.shubham.labs.ecomm.resources;
 import dev.shubham.labs.ecomm.client.InventoryRestClient;
 import dev.shubham.labs.ecomm.kafka.AllocateInventoryEvent;
 import dev.shubham.labs.ecomm.kafka.KafkaConsumerProps;
-import dev.shubham.labs.ecomm.kafka.consumer.KafkaConsumerConfig;
+import dev.shubham.labs.ecomm.kafka.consumer.BaseKafkaConsumer;
+import dev.shubham.labs.ecomm.kafka.consumer.MessageProcessor;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.observation.ObservationRegistry;
 import io.opentelemetry.api.OpenTelemetry;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -19,16 +20,18 @@ import java.util.List;
 
 //@Service
 @Slf4j
-public class KafkaConsumerService extends KafkaConsumerConfig<String, AllocateInventoryEvent> {
+public class InvnetoryConsumer extends BaseKafkaConsumer<String, AllocateInventoryEvent> {
 
-    protected KafkaConsumerService(KafkaConsumerProps inventoryConsumerProps, MeterRegistry meterRegistry
-            , CircuitBreakerRegistry circuitBreakerRegistry, InventoryRestClient inventoryRestClient, ObservationRegistry observationRegistry) {
-        super(inventoryConsumerProps, StringDeserializer.class, JsonDeserializer.class, meterRegistry,
+
+    protected InvnetoryConsumer(KafkaConsumerProps inventoryConsumerProps, OpenTelemetry openTelemetry, MeterRegistry meterRegistry,
+                                CircuitBreakerRegistry circuitBreakerRegistry, InventoryRestClient inventoryRestClient) {
+        super(inventoryConsumerProps, openTelemetry, meterRegistry,
                 circuitBreakerRegistry.circuitBreaker("backendB"),
                 (key, value) -> {
                     log.info("Received message: {} -> {}", key, value);
                     inventoryRestClient.findInventory(List.of(value.beerId()));
-                },observationRegistry);
+                },
+                StringDeserializer.class, JsonDeserializer.class);
     }
 
     @PostConstruct
@@ -40,5 +43,4 @@ public class KafkaConsumerService extends KafkaConsumerConfig<String, AllocateIn
     public void destroy() {
         this.stop();
     }
-
 }

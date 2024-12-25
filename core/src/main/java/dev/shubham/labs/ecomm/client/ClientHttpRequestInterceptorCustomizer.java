@@ -12,6 +12,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import static dev.shubham.labs.ecomm.util.Helper.getMostSpecificCauseMessage;
 import static dev.shubham.labs.ecomm.util.Helper.uuid;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class ClientHttpRequestInterceptorCustomizer implements ClientHttpRequest
                 headers.set("x-retry-count", getRetryCount());
                 return execution.execute(request, body);
             } catch (IOException e) {
-                throw new RuntimeException(e.getMessage());
+                throw new RuntimeException(e.getCause());
             }
         };
 

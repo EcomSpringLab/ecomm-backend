@@ -11,6 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 public class KafkaConsumerProps extends KafkaProps {
 
+    private String consumerName;
+    private String groupId;
     private String consumerGroup;
     private int concurrency = 1;
     private List<String> circuitBreakers;

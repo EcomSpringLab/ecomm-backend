@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -22,7 +23,7 @@ public class ResourceController {
     @GetMapping(path = "/test")
     ResponseEntity<String> status() {
         log.info("status request received");
-        allocateInventoryProducerService.send(new AllocateInventoryEvent("testidbeer"));
+        allocateInventoryProducerService.send(new AllocateInventoryEvent(UUID.randomUUID().toString()));
         return inventoryRestClient.findInventory(Collections.singleton("test"));
 
     }

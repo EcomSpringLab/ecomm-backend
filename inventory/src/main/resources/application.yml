@@ -11,6 +11,49 @@ spring:
 application:
   consumer:
     inventory:
+      group-id: testing
+      consumerName: "inventory-consumer-test"
       bootstrapServers: "http://localhost:9092"
+      concurrency: 3
       topic: ${KAFKA_INVENTORY_CONSUMER_TOPIC:allocate-inventory-event}
       consumerGroup: ${KAFKA_INVENTORY_CONSUMER_GROUP:inventory-consumer}
+      circuitBreakers:
+        - backendA
+  client:
+    inventory:
+      baseUrl: "http://localhost:8089"
+      connectTimeout: 1s
+resilience4j.retry:
+  instances:
+    backendA:
+      maxAttempts: 3
+      waitDuration: 100ms
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - java.lang.RuntimeException
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10                           # Reduced to 10 for faster testing
+      permittedNumberOfCallsInHalfOpenState: 2       # Only 2 calls needed to evaluate in HALF_OPEN
+      waitDurationInOpenState: 5000                   # 5 seconds in OPEN before moving to HALF_OPEN
+      failureRateThreshold: 50                        # 50% failure rate threshold
+      eventConsumerBufferSize: 10
+      registerHealthIndicator: true
+      automaticTransitionFromOpenToHalfOpenEnabled: true  # Automatic transition after waitDuration
+      recordExceptions:
+        - java.lang.Throwable
+
+  instances:
+    backendA:
+      baseConfig: default
+      slidingWindowSize: 5                            # Even smaller window for faster testing
+      failureRateThreshold: 40                        # 40% threshold
+      waitDurationInOpenState: 5000                   # 5 seconds wait
+
+    backendB:
+      baseConfig: default
+      slidingWindowSize: 5
+      failureRateThreshold: 40
+      waitDurationInOpenState: 5000
