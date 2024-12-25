@@ -1,8 +1,8 @@
 package dev.shubham.labs.ecomm.resources;
 
 import dev.shubham.labs.ecomm.client.InventoryRestClient;
-import dev.shubham.labs.ecomm.kafka.AllocateInventoryEvent;
-import dev.shubham.labs.ecomm.kafka.producer.KafkaProducerService;
+import dev.shubham.labs.kafka.AllocateInventoryEvent;
+import dev.shubham.labs.kafka.producer.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

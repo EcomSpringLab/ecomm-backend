@@ -1,11 +1,9 @@
 package dev.shubham.labs.ecomm.resources;
 
 import dev.shubham.labs.ecomm.client.InventoryRestClient;
-import dev.shubham.labs.ecomm.kafka.AllocateInventoryEvent;
-import dev.shubham.labs.ecomm.kafka.KafkaConsumerProps;
-import dev.shubham.labs.ecomm.kafka.consumer.BaseKafkaConsumer;
-import dev.shubham.labs.ecomm.kafka.consumer.MessageProcessor;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import dev.shubham.labs.kafka.AllocateInventoryEvent;
+import dev.shubham.labs.kafka.KafkaConsumerProps;
+import dev.shubham.labs.kafka.consumer.BaseKafkaConsumer;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.OpenTelemetry;
@@ -14,7 +12,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
