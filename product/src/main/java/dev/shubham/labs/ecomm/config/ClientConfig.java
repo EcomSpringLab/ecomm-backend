@@ -1,7 +1,7 @@
 package dev.shubham.labs.ecomm.config;
 
-import dev.shubham.labs.ecomm.client.ClientProps;
-import dev.shubham.labs.ecomm.client.HttpClientCustomizer;
+import dev.shubham.labs.client.ClientProps;
+import dev.shubham.labs.client.HttpClientCustomizer;
 import dev.shubham.labs.ecomm.client.InventoryRestClient;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;

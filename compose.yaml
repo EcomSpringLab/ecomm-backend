@@ -61,21 +61,21 @@ services:
       KAFKA_CONSUMER_CONFIG_AUTO_OFFSET_RESET: "earliest"
     depends_on:
       - kafka
-#  akhq:
-#    image: tchiotludo/akhq:latest
-#    environment:
-#      AKHQ_CONFIGURATION: |
-#        akhq:
-#          connections:
-#            docker-kafka-server:
-#              properties:
-#                bootstrap.servers: "kafka:9092"
-#              schema-registry:
-#                enabled: false
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - kafka
+  #  akhq:
+  #    image: tchiotludo/akhq:latest
+  #    environment:
+  #      AKHQ_CONFIGURATION: |
+  #        akhq:
+  #          connections:
+  #            docker-kafka-server:
+  #              properties:
+  #                bootstrap.servers: "kafka:9092"
+  #              schema-registry:
+  #                enabled: false
+  #    ports:
+  #      - "8080:8080"
+  #    depends_on:
+  #      - kafka
   collector:
     image: 'otel/opentelemetry-collector-contrib:latest'
     command:

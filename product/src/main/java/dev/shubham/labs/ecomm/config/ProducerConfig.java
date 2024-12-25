@@ -1,9 +1,9 @@
 package dev.shubham.labs.ecomm.config;
 
-import dev.shubham.labs.ecomm.kafka.AllocateInventoryEvent;
-import dev.shubham.labs.ecomm.kafka.KafkaProducerConfig;
-import dev.shubham.labs.ecomm.kafka.producer.KafkaProducerService;
-import dev.shubham.labs.ecomm.kafka.producer.KafkaProducerServiceImpl;
+import dev.shubham.labs.kafka.AllocateInventoryEvent;
+import dev.shubham.labs.kafka.KafkaProducerConfig;
+import dev.shubham.labs.kafka.producer.KafkaProducerService;
+import dev.shubham.labs.kafka.producer.KafkaProducerServiceImpl;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import io.opentelemetry.api.trace.Tracer;
