@@ -40,4 +40,6 @@ jobs:
       # Generate and attest to build provenance
       - uses: actions/attest-build-provenance@v1
         with:
-          subject-path: 'target/*.jar'
+          subject-path: |
+            product/target/*.jar
+            inventory/target/*.jar
