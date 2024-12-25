@@ -7,6 +7,15 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5432:5432'
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
   redis:
     image: 'redis:latest'
     ports:
@@ -22,9 +31,51 @@ services:
   kafka:
     image: 'apache/kafka:latest'
     ports:
-      - '9092:9092'
+      - "9092:9092"     # External port
+      - "29092:29092"   # Internal port
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENERS: "INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      # Changed back to support both localhost and Docker access
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_METADATA_LOG_DIR: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'OTMwMTI1ODktZWJkZC00YTNkLWExMWEtYzM5MDRkNjZlOTdk'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   #    labels:
   #      org.springframework.boot.readiness-check.tcp.disable: true
+  kafka-ui:
+    image: redpandadata/console:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BROKERS: "kafka:29092"
+      # Add these configs for better compatibility
+      KAFKA_SCHEMA_REGISTRY_ENABLED: "false"
+      KAFKA_CONSUMER_CONFIG_AUTO_OFFSET_RESET: "earliest"
+    depends_on:
+      - kafka
+#  akhq:
+#    image: tchiotludo/akhq:latest
+#    environment:
+#      AKHQ_CONFIGURATION: |
+#        akhq:
+#          connections:
+#            docker-kafka-server:
+#              properties:
+#                bootstrap.servers: "kafka:9092"
+#              schema-registry:
+#                enabled: false
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - kafka
   collector:
     image: 'otel/opentelemetry-collector-contrib:latest'
     command:

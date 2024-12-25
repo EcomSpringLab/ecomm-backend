@@ -38,6 +38,7 @@ public class CustomizedMessageListener<K, V> {
                 if(acknowledgment != null)
                     acknowledgment.acknowledge();
             }catch (CallNotPermittedException e) {
+                eventService.updateEventStateToConsumedFailure(record, e);
                 log.error("call not permitted");
                 throw e;
             } catch (Throwable e) {
