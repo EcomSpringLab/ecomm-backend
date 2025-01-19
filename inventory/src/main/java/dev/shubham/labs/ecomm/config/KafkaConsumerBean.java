@@ -53,6 +53,7 @@ public class KafkaConsumerBean {
 
     @Bean
     public NewTopic createTopic() {
+        log.info("Creating topic: allocate-inventory-event");
         return new NewTopic("allocate-inventory-event", 3, (short) 1); // Topic name, partitions, replication factor
     }
 

@@ -16,6 +16,15 @@ import static dev.shubham.labs.Helper.getMostSpecificCauseMessage;
 @AutoConfiguration
 public class ResilienceAutoConfiguration {
 
+//    @Bean
+//    public CompositeCustomizer<CircuitBreakerConfigCustomizer> circuitBreakerRegistryCustomizer() {
+//        return registry -> {
+//                CompositeCustomizer compositeRegistry = (CompositeCustomizer) registry;
+//                compositeRegistry.withRegistryStore(new CacheCircuitBreakerRegistryStore());
+//            }
+//        };
+//    }
+
     @Slf4j
     @Configuration(proxyBeanMethods = false)
     static class CircuitBreakerConfiguration {
@@ -25,6 +34,7 @@ public class ResilienceAutoConfiguration {
             return new RegistryEventConsumer<>() {
                 @Override
                 public void onEntryAddedEvent(EntryAddedEvent<CircuitBreaker> entryAddedEvent) {
+
                     var circuitBreaker = entryAddedEvent.getAddedEntry();
                     // Add specific event listeners for the added circuit breaker
                     circuitBreaker.getEventPublisher()
