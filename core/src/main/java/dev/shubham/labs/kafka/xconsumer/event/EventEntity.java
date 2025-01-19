@@ -51,6 +51,9 @@ public class EventEntity {
     @Column(nullable = false)
     private Instant updatedAt;
 
+    @Version
+    private Long version;
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

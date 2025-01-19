@@ -1,19 +1,22 @@
 package dev.shubham.labs.kafka.xconsumer.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class JpaEventService<K, V> implements EventService<K, V> {
     private final EventRepository eventRepository;
     private final ObjectMapper objectMapper;
 
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
     @Override
-    @Transactional
     public void saveEvent(ConsumerRecord<K, V> record) {
         try {
             EventEntity event = createEventEntity(record);
@@ -26,20 +29,20 @@ public class JpaEventService<K, V> implements EventService<K, V> {
         }
     }
 
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
     @Override
-    @Transactional
     public void updateEventStateToProcessing(ConsumerRecord<K, V> record) {
         updateEventState(record, EventStatus.PROCESSING, null);
     }
 
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
     @Override
-    @Transactional
     public void updateEventStateToConsumedSuccessfully(ConsumerRecord<K, V> record) {
         updateEventState(record, EventStatus.CONSUMED_SUCCESSFULLY, null);
     }
 
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
     @Override
-    @Transactional
     public void updateEventStateToConsumedFailure(ConsumerRecord<K, V> record, Throwable error) {
         updateEventState(record, EventStatus.CONSUMED_FAILURE, error.getMessage());
     }

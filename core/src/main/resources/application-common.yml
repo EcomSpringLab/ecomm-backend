@@ -1,4 +1,10 @@
 management:
+  opentelemetry:
+    resourceAttributes:
+        service.name: ${spring.application.name}
+        service.namespace: ${spring.application.name}
+        service.instance.id: ${spring.application.name}-${random.uuid}
+        deployment.environment: local
   health:
     circuitbreakers:
       enabled: true

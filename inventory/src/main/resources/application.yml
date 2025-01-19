@@ -2,7 +2,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true  # Optional, helpful for debugging
+    show-sql: false  # Optional, helpful for debugging
     properties:
       hibernate:
         format_sql: true
@@ -10,15 +10,35 @@ spring:
     include:
       - common
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     #    driverClassName: org.postgresql.Driver
     url: "jdbc:postgresql://localhost:5432/mydatabase"
-    username: ${DB_USERNAME:myuser}
-    password: ${DB_PASSWORD:secret}
+#    username: ${DB_USERNAME:myuser}
+#    password: ${DB_PASSWORD:secret}
     hikari:
       auto-commit: false
-      minimum-idle: 10
-      maximum-pool-size: 100
-      max-lifetime: 900000
+      minimum-idle: 1
+      maximum-pool-size: 10
+  cloud.vault:
+    uri: http://localhost:8200
+    token: vault-root-password
+#    authentication: APPROLE
+#    app-role:
+#      role-id: inventory-role-id
+    kv:
+      enabled: false
+      default-context: ${spring.application.name}
+    config.lifecycle:
+      enabled: true
+      min-renewal: 30s        # Won't try to renew with <10s left
+      expiry-threshold: 10s   # Start checking 30s before expiry
+#      lease-endpoints: Leases
+    postgresql:
+      enabled: true
+      role: inventory-app
+      backend: database
+      username-property: spring.datasource.username
+      password-property: spring.datasource.password
 
 application:
   consumer:

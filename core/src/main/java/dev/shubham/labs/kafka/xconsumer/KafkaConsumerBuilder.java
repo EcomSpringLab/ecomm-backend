@@ -8,6 +8,7 @@ import dev.shubham.labs.kafka.xconsumer.lifecycle.NoOpContainerStrategy;
 import dev.shubham.labs.kafka.xconsumer.resiliency.NoOpResilienceStrategy;
 import dev.shubham.labs.kafka.xconsumer.resiliency.ResilienceStrategy;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.instrumentation.kafkaclients.v2_6.TracingConsumerInterceptor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -33,7 +34,7 @@ public class KafkaConsumerBuilder<K, V> {
     private ResilienceStrategy resilienceStrategy = new NoOpResilienceStrategy();
     private ContainerLifecycleStrategy containerStrategy = new NoOpContainerStrategy();
     private Consumer<ConsumerRecord<K, V>> messageProcessor;
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public KafkaConsumerBuilder<K, V> withConfig(KafkaConsumerProps config) {
         this.config = config;
@@ -122,6 +123,8 @@ public class KafkaConsumerBuilder<K, V> {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingConsumerInterceptor.class.getName());
+
         props.putAll(additionalProperties);
 
         ConsumerFactory<K, V> factory = new DefaultKafkaConsumerFactory<>(props);
